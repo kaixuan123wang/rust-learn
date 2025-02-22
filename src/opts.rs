@@ -13,6 +13,8 @@ pub struct Opts {
 pub enum Commands {
     #[command(name = "csv", about = "Show CSV, or convert CSV to other formats")]
     Csv(CsvOpts),
+    #[command(name = "genpass", about = "Generate a password")]
+    Genpass(GenpassOpts),
 }
 
 #[derive(Debug, Parser)]
@@ -31,6 +33,27 @@ pub struct CsvOpts {
     pub format: OutputFormat,
 }
 
+#[derive(Debug, Parser)]
+pub struct GenpassOpts {
+    #[arg(short, long, help = "Length of the password", default_value_t = 16)]
+    pub length: u8,
+    #[arg(long, help = "No uppercase", value_parser = parse_bool, default_value_t = false)]
+    pub no_uppercase: bool,
+    #[arg(long, help = "No lowercase", value_parser = parse_bool, default_value_t = false)]
+    pub no_lowercase: bool,
+    #[arg(long, help = "No numbers", value_parser = parse_bool, default_value_t = false)]
+    pub no_numbers: bool,
+    #[arg(long, help = "No symbols", value_parser = parse_bool, default_value_t = false)]
+    pub no_symbols: bool,
+}
+
+fn parse_bool(s: &str) -> Result<bool, String> {
+    match s.to_lowercase().as_str() {
+        "true" => Ok(true),
+        "false" => Ok(false),
+        _ => Err(format!("Invalid boolean value: {}", s)),
+    }
+}
 #[derive(Debug, Clone, Copy)]
 pub enum OutputFormat {
     Json,

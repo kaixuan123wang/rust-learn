@@ -1,5 +1,5 @@
 use clap::{Parser};
-use learn::{Opts, Commands, process_csv, OutputFormat};
+use learn::{Opts, Commands, process_csv, process_genpass};
 
 fn main() -> anyhow::Result<()> {
     let args = Opts::parse();
@@ -12,7 +12,9 @@ fn main() -> anyhow::Result<()> {
             };
             process_csv(&opts.input, output, opts.format)?;
         }
-        
+        Commands::Genpass(opts) => {
+            process_genpass(opts.length, opts.no_uppercase, opts.no_lowercase, opts.no_numbers, opts.no_symbols)?;
+        }
     }
     Ok(())
 }
