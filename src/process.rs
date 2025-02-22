@@ -1,27 +1,29 @@
-use serde::{Serialize, Deserialize};
 use csv::Reader;
 use std::fs;
-
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
-pub struct Player {
-    pub name: String,
-    pub position: String,
-    pub nationality: String,
-    #[serde(rename = "DOB")]
-    pub dob: String,
-    #[serde(rename = "Kit Number")]
-    pub kit: u8,
-}
-
-pub fn process_csv(input: &str, output: &str) -> anyhow::Result<()> {
+use serde_json::Value;
+use crate::opts::OutputFormat;
+use std::collections::BTreeMap;
+pub fn process_csv(input: &str, output: String, format: OutputFormat) -> anyhow::Result<()> {
     let mut reader = Reader::from_path(input)?;
     let mut ret = Vec::with_capacity(128); // 预分配内存，避免频繁扩容
-    for result in reader.deserialize() {
-        let player: Player = result?;
-        ret.push(player);
+    let headers = reader.headers()?.clone();
+    for result in reader.records() {
+        let record = result?;
+        let mut map = BTreeMap::new();
+        let iter = headers.iter().zip(record.iter());
+        for (header, value) in iter {
+            map.insert(header.to_string(), value.to_string());
+        }
+        ret.push(map);
     }
-    let json = serde_json::to_string_pretty(&ret)?;
-    fs::write(output, json)?;
+    let output_str = match format {
+        OutputFormat::Json => serde_json::to_string(&ret)?,
+        OutputFormat::Yaml => serde_yaml::to_string(&ret)?,
+        OutputFormat::Toml => {
+            let wrapper = BTreeMap::from([("data".to_string(), ret)]);
+            toml::to_string(&wrapper)?
+        },
+    };
+    fs::write(output, output_str)?;
     Ok(())
 }

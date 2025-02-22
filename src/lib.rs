@@ -1,5 +1,5 @@
 mod opts;
 mod process;
 
-pub use opts::{Opts, Commands, CsvOpts};
-pub use process::{Player, process_csv};
+pub use opts::{Opts, Commands, CsvOpts, OutputFormat};
+pub use process::{process_csv};
