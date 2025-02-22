@@ -1,5 +1,5 @@
 use clap::{Parser};
-use learn::{Opts, Commands, process_csv, process_genpass};
+use learn::{Opts, Commands, process_csv, process_genpass, Base64Subcommand, process_base64_encode, process_base64_decode};
 
 fn main() -> anyhow::Result<()> {
     let args = Opts::parse();
@@ -14,6 +14,16 @@ fn main() -> anyhow::Result<()> {
         }
         Commands::Genpass(opts) => {
             process_genpass(opts.length, opts.no_uppercase, opts.no_lowercase, opts.no_numbers, opts.no_symbols)?;
+        }
+        Commands::Base64(subcommand) => {
+            match subcommand {
+                Base64Subcommand::Encode(opts) => {
+                    process_base64_encode(&opts.input, opts.format)?;
+                }
+                Base64Subcommand::Decode(opts) => {
+                    process_base64_decode(&opts.input, opts.format)?;
+                }
+            }
         }
     }
     Ok(())

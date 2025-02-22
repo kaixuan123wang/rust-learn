@@ -1,8 +1,8 @@
 use csv::Reader;
 use std::fs;
-use serde_json::Value;
-use crate::opts::OutputFormat;
+use crate::cli::OutputFormat;
 use std::collections::BTreeMap;
+
 pub fn process_csv(input: &str, output: String, format: OutputFormat) -> anyhow::Result<()> {
     let mut reader = Reader::from_path(input)?;
     let mut ret = Vec::with_capacity(128); // 预分配内存，避免频繁扩容
