@@ -1,8 +1,7 @@
 use base64::prelude::BASE64_STANDARD;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
-use std::io;
-use std::fs::File;
 use crate::Base64Format;
+use crate::get_reader;
 
 pub fn process_base64_encode(input: &str, format: Base64Format) -> anyhow::Result<String> {
     let mut reader =  get_reader(&input)?;
@@ -30,13 +29,4 @@ pub fn process_base64_decode(input: &str, format: Base64Format) -> anyhow::Resul
     };
     let decoded = String::from_utf8(decode)?;
     Ok(decoded)
-}
-
-// dyn表示动态类型，可以包裹实现某一方法的不同的类型
-fn get_reader(input: &str) -> anyhow::Result<Box<dyn io::Read>> {
-    if input == "-" {
-        Ok(Box::new(io::stdin().lock()))
-    } else {
-        Ok(Box::new(File::open(input)?))
-    }
 }

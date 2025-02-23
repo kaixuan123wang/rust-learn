@@ -3,11 +3,11 @@ use std::path::Path;
 use std::str::FromStr;
 use std::fmt;
 use std::fmt::Display;
-use super::verify_input_file;
+use super::verify_file;
 
 #[derive(Debug, Parser)]
 pub struct CsvOpts {
-    #[arg(short, long, help = "Input file", value_parser = verify_input_file)]
+    #[arg(short, long, help = "Input file", value_parser = verify_file)]
     pub input: String,
     #[arg(short, long, help = "Output file")]
     pub output: Option<String>,
