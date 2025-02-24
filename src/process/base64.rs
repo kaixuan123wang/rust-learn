@@ -16,7 +16,7 @@ pub fn process_base64_encode(input: &str, format: Base64Format) -> anyhow::Resul
     Ok(result)
 }
 
-pub fn process_base64_decode(input: &str, format: Base64Format) -> anyhow::Result<String> {
+pub fn process_base64_decode(input: &str, format: Base64Format) -> anyhow::Result<Vec<u8>> {
     let mut reader =  get_reader(&input)?;
 
     let mut buf = String::new();   
@@ -27,6 +27,5 @@ pub fn process_base64_decode(input: &str, format: Base64Format) -> anyhow::Resul
         Base64Format::Standard => BASE64_STANDARD.decode(buf)?,
         Base64Format::UrlSafe => URL_SAFE_NO_PAD.decode(buf)?,
     };
-    let decoded = String::from_utf8(decode)?;
-    Ok(decoded)
+    Ok(decode)
 }

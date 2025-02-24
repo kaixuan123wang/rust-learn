@@ -1,15 +1,17 @@
 
 use clap::Parser;
-use super::verify_file;
+use super::{verify_file, verify_path};
 use std::str::FromStr;
 use std::fmt;
-
+use std::path::PathBuf;
 #[derive(Debug, Parser)]
 pub enum TextSubcommand {
     #[command(name = "sign", about = "Sign a message with a private/shared key")]
     Sign(SignOpts),
     #[command(name = "verify", about = "Verify a signed string")]
     Verify(VerifyOpts),
+    #[command(name = "generate", about = "Generate a new key")]
+    Generate(GenerateOpts),
 }
 
 #[derive(Debug, Parser)]
@@ -32,6 +34,14 @@ pub struct VerifyOpts {
     pub sig: String,
     #[arg(long, default_value = "blake3", value_parser = parse_format)]
     pub format: TextSignFormat,
+}
+
+#[derive(Debug, Parser)]
+pub struct GenerateOpts {
+    #[arg(long, default_value = "blake3", value_parser = parse_format)]
+    pub format: TextSignFormat,
+    #[arg(short, long, help = "Output file", value_parser = verify_path)]
+    pub output: PathBuf,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -67,6 +77,4 @@ impl From<TextSignFormat> for String {
         }
     }
 }
-
-
 

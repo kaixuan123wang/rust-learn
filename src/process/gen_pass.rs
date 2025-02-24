@@ -1,15 +1,13 @@
-use rand::rng;
 use rand::seq::SliceRandom;
-use rand::prelude::IndexedRandom;
-use zxcvbn::zxcvbn;
+use rand::prelude::thread_rng;
 
 const UPPERCASE_CHARS: &[u8] = b"ABCDEFGHIJKLMNPQRSTUVWXYZ";
 const LOWERCASE_CHARS: &[u8] = b"abcdefghijklmnopqrstuvwxyz";
 const NUMBERS: &[u8] = b"123456789";
 const SYMBOLS: &[u8] = b"~!@#$%&*_+";
 
-pub fn process_genpass(length: u8, no_uppercase: bool, no_lowercase: bool, no_numbers: bool, no_symbols: bool) -> anyhow::Result<()> {
-    let mut rng = rng();
+pub fn process_genpass(length: u8, no_uppercase: bool, no_lowercase: bool, no_numbers: bool, no_symbols: bool) -> anyhow::Result<String> {
+    let mut rng = thread_rng();
     let mut password = Vec::with_capacity(length as usize);
     let mut chars = Vec::new();
 
@@ -37,8 +35,5 @@ pub fn process_genpass(length: u8, no_uppercase: bool, no_lowercase: bool, no_nu
     password.shuffle(&mut rng);
 
     let password_str = String::from_utf8(password).unwrap();
-    let result = zxcvbn(&password_str, &[]);
-    eprintln!("{:?}", result.score());
-    println!("{}", password_str);
-    Ok(())
+    Ok(password_str)
 }   
