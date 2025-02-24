@@ -27,10 +27,7 @@ pub fn process_text_sign(input: &str, key: &str, format: TextSignFormat) -> anyh
     reader.read_to_end(&mut buf)?;
     let signed = match format {
         TextSignFormat::Blake3 => {
-            let key = fs::read(key)?;
-            let key = &key[..32];
-            let key = key.try_into().unwrap();
-            let signer = Blake3 { key };
+            let signer = Blake3::new(key);
             signer.sign(&mut reader)?
         }
         TextSignFormat::Ed25519 => todo!(),
@@ -82,5 +79,14 @@ impl TextVerify for Ed25519Verifier {
         let sig = Signature::from_bytes(sig.try_into()?);
         let ret = self.key.verify(&buf, &sig).is_ok();
         Ok(ret)
+    }
+}
+
+impl Blake3 {
+    pub fn new(key: &str) -> Self {
+        let key = fs::read(key).unwrap();
+        let key = &key[..32];
+        let key = key.try_into().unwrap();
+        Self { key }
     }
 }
