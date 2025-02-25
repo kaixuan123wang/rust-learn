@@ -19,6 +19,8 @@ use zxcvbn::zxcvbn;
 use std::fs;
 
 fn main() -> anyhow::Result<()> {
+    tracing_subscriber::fmt::init();
+
     let args = Opts::parse();
     match args.command {
         Commands::Csv(opts) => {
