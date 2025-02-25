@@ -4,12 +4,14 @@ mod csv;
 mod genpass;
 mod base64;
 mod text;
+mod http;
 pub use self::csv::{CsvOpts, OutputFormat};
 pub use self::genpass::GenpassOpts;
 pub use self::base64::Base64Subcommand;
 pub use self::base64::Base64Format;
 pub use self::text::TextSubcommand;
 pub use self::text::TextSignFormat;
+pub use self::http::{HttpSubcommand, ServerOpts};
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct Opts {
@@ -27,6 +29,8 @@ pub enum Commands {
     Base64(Base64Subcommand),
     #[command(subcommand)]
     Text(TextSubcommand),
+    #[command(subcommand)]
+    Http(HttpSubcommand),
 }
 
 fn verify_file(path: &str) -> Result<String, String> {

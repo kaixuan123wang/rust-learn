@@ -1,5 +1,20 @@
 use clap::{Parser};
-use learn::{Opts, Commands, process_csv, process_genpass, Base64Subcommand, process_base64_encode, process_base64_decode, TextSubcommand, process_text_sign, process_text_verify, process_text_generate, TextSignFormat};
+use learn::{
+    Opts, 
+    Commands, 
+    process_csv, 
+    process_genpass, 
+    Base64Subcommand, 
+    process_base64_encode, 
+    process_base64_decode, 
+    TextSubcommand, 
+    process_text_sign, 
+    process_text_verify, 
+    process_text_generate, 
+    TextSignFormat, 
+    HttpSubcommand,
+    process_http_server,
+};
 use zxcvbn::zxcvbn;
 use std::fs;
 
@@ -55,7 +70,13 @@ fn main() -> anyhow::Result<()> {
                             fs::write(name, &key[1])?;
                         }
                     }
-
+                }
+            }
+        }
+        Commands::Http(subcommand) => {
+            match subcommand {
+                HttpSubcommand::Serve(opts) => {
+                    process_http_server(opts.dir, opts.port)?;
                 }
             }
         }
