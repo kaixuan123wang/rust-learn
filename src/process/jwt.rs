@@ -1,5 +1,4 @@
 use jsonwebtoken::{encode, EncodingKey, Header, decode, DecodingKey, Validation};
-use crate::JwtEncodeOpts;
 use serde::{Serialize, Deserialize};
 
 #[derive(Debug,Serialize, Deserialize)]
