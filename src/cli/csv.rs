@@ -4,7 +4,8 @@ use std::str::FromStr;
 use std::fmt;
 use std::fmt::Display;
 use super::verify_file;
-
+use crate::CmdExector;
+use crate::process::process_csv;
 #[derive(Debug, Parser)]
 pub struct CsvOpts {
     #[arg(short, long, help = "Input file", value_parser = verify_file)]
@@ -13,12 +14,21 @@ pub struct CsvOpts {
     pub output: Option<String>,
     #[arg(short, long, help = "Delimiter", default_value_t = ',')]
     pub delimiter: char,
-    // -h为clap的help，所以header不能使用-h
     #[arg(long, help = "CSV has header or not", default_value_t = true)]
     pub header: bool,
-
     #[arg(long, help = "Output format",value_parser=parse_format, default_value = "json")]
     pub format: OutputFormat,
+}
+impl CmdExector for CsvOpts {
+    async fn execute(self) -> anyhow::Result<()> {
+        let output = if let Some(output) = self.output {
+            output
+        } else {
+            format!("output.{}", self.format)
+        };
+        process_csv(&self.input, output, self.format)?;
+        Ok(())
+    }
 }
 
 impl Display for OutputFormat {

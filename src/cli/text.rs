@@ -3,8 +3,15 @@ use clap::Parser;
 use super::{verify_file, verify_path};
 use std::str::FromStr;
 use std::fmt;
-use std::path::PathBuf;
+use std::path::PathBuf; 
+use crate::CmdExector;
+use crate::process::process_text_sign;
+use crate::process::process_text_verify;
+use crate::process::process_text_generate;
+use std::fs;
+use enum_dispatch::enum_dispatch;
 #[derive(Debug, Parser)]
+#[enum_dispatch(CmdExector)]
 pub enum TextSubcommand {
     #[command(name = "sign", about = "Sign a message with a private/shared key")]
     Sign(SignOpts),
@@ -78,3 +85,35 @@ impl From<TextSignFormat> for String {
     }
 }
 
+impl CmdExector for SignOpts {
+    async fn execute(self) -> anyhow::Result<()> {
+        process_text_sign(&self.input, &self.key, self.format)?;
+        Ok(())
+    }
+}
+
+impl CmdExector for VerifyOpts {
+    async fn execute(self) -> anyhow::Result<()> {
+        process_text_verify(&self.input, &self.key, self.format)?;
+        Ok(())
+    }
+}
+
+impl CmdExector for GenerateOpts {
+    async fn execute(self) -> anyhow::Result<()> {
+        let key = process_text_generate(&self.format)?;
+        match self.format {
+            TextSignFormat::Blake3 => {
+                let name = self.output.join("blake3.key");
+                fs::write(name, &key[0])?;
+            }
+            TextSignFormat::Ed25519 => {
+                let name = self.output.join("ed25519.key");
+                fs::write(name, &key[0])?;
+                let name = self.output.join("ed25519.pub");
+                fs::write(name, &key[1])?;
+            }
+        }
+        Ok(())
+    }
+}

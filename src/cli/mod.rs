@@ -1,35 +1,39 @@
 use clap::Parser;
 use std::path::{Path, PathBuf};
+use crate::CmdExector;
+use crate::process::{process_csv, process_genpass};
+use enum_dispatch::enum_dispatch;
 mod csv;
 mod genpass;
 mod base64;
 mod text;
 mod http;
-pub use self::csv::{CsvOpts, OutputFormat};
-pub use self::genpass::GenpassOpts;
-pub use self::base64::Base64Subcommand;
-pub use self::base64::Base64Format;
-pub use self::text::TextSubcommand;
-pub use self::text::TextSignFormat;
-pub use self::http::{HttpSubcommand, ServerOpts};
+
+pub use self::base64::*;
+pub use self::csv::*;
+pub use self::genpass::*;
+pub use self::text::*;
+pub use self::http::*;
+
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct Opts {
     #[command(subcommand)]
-    pub command: Commands,
+    pub command: SubCommand,
 }
 
 #[derive(Debug, Parser)]
-pub enum Commands {
+#[enum_dispatch(CmdExector)]
+pub enum SubCommand {
     #[command(name = "csv", about = "Show CSV, or convert CSV to other formats")]
     Csv(CsvOpts),
     #[command(name = "genpass", about = "Generate a password")]
     Genpass(GenpassOpts),
-    #[command(subcommand)]
+    #[command(subcommand, about = "Show base64 encoded text")]
     Base64(Base64Subcommand),
-    #[command(subcommand)]
+    #[command(subcommand, about = "Show text, or sign text")]
     Text(TextSubcommand),
-    #[command(subcommand)]
+    #[command(subcommand, about = "Start a HTTP server")]
     Http(HttpSubcommand),
 }
 
