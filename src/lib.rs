@@ -18,6 +18,9 @@ pub use cli::{
     VerifyOpts,
     GenerateOpts,
     SubCommand,
+    JwtDecodeOpts,
+    JwtEncodeOpts,
+    JwtSubcommand,
 };
 pub use process::*;
 pub use utils::*;

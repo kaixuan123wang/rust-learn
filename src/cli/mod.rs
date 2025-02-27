@@ -8,13 +8,13 @@ mod genpass;
 mod base64;
 mod text;
 mod http;
-
+mod jwt;
 pub use self::base64::*;
 pub use self::csv::*;
 pub use self::genpass::*;
 pub use self::text::*;
 pub use self::http::*;
-
+pub use self::jwt::*;
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct Opts {
@@ -35,6 +35,8 @@ pub enum SubCommand {
     Text(TextSubcommand),
     #[command(subcommand, about = "Start a HTTP server")]
     Http(HttpSubcommand),
+    #[command(subcommand, about = "Show JWT")]
+    Jwt(JwtSubcommand),
 }
 
 fn verify_file(path: &str) -> Result<String, String> {
