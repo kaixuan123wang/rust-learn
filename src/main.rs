@@ -18,7 +18,8 @@ use learn::{
 use zxcvbn::zxcvbn;
 use std::fs;
 
-fn main() -> anyhow::Result<()> {
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt::init();
 
     let args = Opts::parse();
@@ -78,7 +79,7 @@ fn main() -> anyhow::Result<()> {
         Commands::Http(subcommand) => {
             match subcommand {
                 HttpSubcommand::Serve(opts) => {
-                    process_http_server(opts.dir, opts.port)?;
+                    process_http_server(opts.dir, opts.port).await?;
                 }
             }
         }

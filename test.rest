@@ -1,0 +1,6 @@
+### test index page
+GET http://localhost:8080/fixtures
+
+### test index page
+GET http://localhost:8080/tower/fixtures
+
